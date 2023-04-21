@@ -3,123 +3,70 @@
 #include <cstdio>
 #include <fstream>
 #include <string>
-
 using namespace std;
 
+void clear_memory(int* arr);
+void clear_memory(int** arr, int lines);
+
+void fill_array(string path, int* values, int* line, int* column, int value);
+
+void create_matrix(int** matrix, int line, int column);
+void fill_matrix(int** matrix, int line, int column, int value, int* lines, int* columns, int* values);
+void print_matrix(int** matrix, int line, int column);
+
+void print_array(int* arr, int count);
 
 
 int main() {
 
+    setlocale(LC_ALL, "ru");
+
     int value1, value2, lines, columns;
-
-    cout << "Enter number of values of first matrix" << endl;
-    cin >> value1;
-    cout << "Enter number of values of second matrix" << endl;
-    cin >> value2;
-    cout << "enter number of lines of matrices: " << endl;
-    cin >> lines;
-    cout << "enter number of columns of matrices " << endl;
-    cin >> columns;
+    string path_file1 = "C:/files/file1.txt";
+    string path_file2 = "C:/files/file2.txt";
 
 
-    int values1[value1];
-    int line_umbers1[value1];
-    int column_numbers1[value1];
+    cout << "Введите кол-во ненулевых значений 1-ой и 2-ой матрицы: "; cin >> value1 >> value2;
+    cout << "Введите кол-во строк и столбцов матриц: "; cin >> lines >> columns; 
 
-    int values2[value2];
-    int line_umbers2[value2];
-    int column_numbers2[value2];
+    int* values1 = new int[value1];
+    int* line_umbers1 = new int[value1];
+    int* column_numbers1 = new int[value1];
 
-
-    ifstream file1("C:/files/file1.txt");
-    ifstream file2("C:/files/file2.txt");
-
-    if (file1.is_open()) {
-        for (int i = 0; i < value1; i++) {
-            file1 >> values1[i];
-        }
-        cout << endl;
-        for (int i = 0; i < value1; i++) {
-            file1 >> line_umbers1[i];
-        }
-        cout << endl;
-        for (int i = 0; i < value1; i++) {
-            file1 >> column_numbers1[i];
-        }
-
-        file1.close();
-    }
-    else cout << "file is not open" << endl;
-
-    if (file2.is_open()) {
-        for (int i = 0; i < value2; i++) {
-            file2 >> values2[i];
-        }
-        cout << endl;
-        for (int i = 0; i < value2; i++) {
-            file2 >> line_umbers2[i];
-        }
-        cout << endl;
-        for (int i = 0; i < value2; i++) {
-            file2 >> column_numbers2[i];
-        }
-
-        file1.close();
-    }
-    else cout << "file is not open" << endl;
+    int* values2 = new int[value2];
+    int* line_umbers2 = new int[value2];
+    int* column_numbers2 = new int[value2];
 
 
-    int matrix1[lines][columns];
-    int matrix2[lines][columns];
+    fill_array(path_file1, values1, line_umbers1, column_numbers1, value1);
+    fill_array(path_file2, values2, line_umbers2, column_numbers2, value2);
 
-    for (int i = 0; i < lines; i++) {
-        for (int j = 0; j < columns; j++) {
-            matrix1[i][j] = 0;
-        }
-    }
-    for (int i = 0; i < value1; i++) {
-        matrix1[line_umbers1[i] - 1][column_numbers1[i] - 1] = values1[i];
-    }
+    int** matrix1 = new int* [lines];
+    int** matrix2 = new int* [lines];
+    int** matrix3 = new int* [lines];
+    create_matrix(matrix1, lines, columns);
+    create_matrix(matrix2, lines, columns);
+    create_matrix(matrix3, lines, columns);
 
-    for (int i = 0; i < lines; i++) {
-        for (int j = 0; j < columns; j++) {
-            matrix2[i][j] = 0;
-        }
-    }
-    for (int i = 0; i < value2; i++) {
-        matrix2[line_umbers2[i] - 1][column_numbers2[i] - 1] = values2[i];
-    }
+    fill_matrix(matrix1, lines, columns, value1, line_umbers1, column_numbers1, values1);
+    fill_matrix(matrix2, lines, columns, value2, line_umbers2, column_numbers2, values2);
 
-    cout << "the first matrix :" << endl;
-    for (int i = 0; i < lines; i++) {
-        for (int j = 0; j < columns; j++) {
-            cout << matrix1[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
+    cout << "Первая матрица: " << endl;
+    print_matrix(matrix1, lines, columns);
+    cout << "Вторая матрица: " << endl;
+    print_matrix(matrix2, lines, columns);
 
-    cout << "the second matrix :" << endl;
-    for (int i = 0; i < lines; i++) {
-        for (int j = 0; j < columns; j++) {
-            cout << matrix2[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-
-    int matrix3[lines][columns];
     int count = 0;
 
-    cout << "Matrix3 = matrix1 * matrix2: " << endl;
-    cout << endl;
+    cout << "Матрица произведения: " << endl;
     for (int i = 0; i < lines; i++) {
         for (int j = 0; j < lines; j++) {
             matrix3[i][j] = 0;
             for (int k = 0; k < lines; k++) {
                 matrix3[i][j] += matrix1[i][k] * matrix2[k][j];
             }
-            cout << matrix3[i][j] << " ";
+            if (matrix3[i][j] > 9) cout << matrix3[i][j] << "  ";
+            else cout << matrix3[i][j] << "   ";
             if (matrix3[i][j] != 0) {
                 count = count + 1;
             }
@@ -127,12 +74,11 @@ int main() {
         }
         cout << endl;
     }
-
     cout << endl;
 
-    int values3[count];
-    int lines_number3[count];
-    int first_element[lines + 1];
+    int* values3 = new int[count];
+    int* lines_number3 = new int[count];
+    int* first_element = new int[lines + 1];
     int n = lines;
     int k = 0;
 
@@ -170,32 +116,103 @@ int main() {
 
     first_element[lines] = count;
 
-    cout << "the final CCS of the matrix: " << endl;
-    cout << "array of values: ";
+    cout << "Окончательный вариант матрицы: " << endl << endl;
 
-    for (int i = 0; i < count; i++) {
-        cout << values3[i] << " ";
-    }
+    cout << "Массив значений: ";
+    print_array(values3, count);
 
-    cout << endl;
+    cout << "Массив номеров строк: ";
+    print_array(lines_number3, count); 
 
-    cout << "array of line numbers: ";
-
-    for (int i = 0; i < count; i++) {
-        cout << lines_number3[i] << " ";
-    }
-
-    cout << endl;
-
-    cout << "array of the first elements of each column: ";
-
-    for (int i = 0; i < lines + 1; i++) {
-        cout << first_element[i] << " ";
-    }
+    cout << "Массив первых элементов каждого столбца: ";
+    print_array(first_element, lines);
 
 
+    clear_memory(values1);
+    clear_memory(line_umbers1);
+    clear_memory(column_numbers1);
+
+    clear_memory(values2);
+    clear_memory(line_umbers2);
+    clear_memory(column_numbers2);
+
+    clear_memory(matrix1, lines);
+    clear_memory(matrix2, lines);
+    clear_memory(matrix2, lines);
 
     return 0;
 }
 
+void clear_memory(int* arr)
+{
+    delete[] arr;
+}
 
+void clear_memory(int** arr, int lines)
+{
+    for (int i = 0; i < lines; i++)
+    {
+        delete[] arr[i];
+    }
+    delete[] arr;
+}
+
+void fill_array(string path, int* values, int* line, int* column, int value)
+{
+    ifstream file(path);
+    if (file.is_open()) {
+        for (int i = 0; i < value; i++) {
+            file >> values[i];
+        }
+        cout << endl;
+        for (int i = 0; i < value; i++) {
+            file >> line[i];
+        }
+        cout << endl;
+        for (int i = 0; i < value; i++) {
+            file >> column[i];
+        }
+
+        file.close();
+    }
+    else cout << "file is not open" << endl;
+}
+
+void fill_matrix(int** matrix, int line, int column, int value, int* lines, int* columns, int* values)
+{
+    for (int i = 0; i < line; i++) {
+        for (int j = 0; j < column; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < value; i++) {
+        matrix[lines[i] - 1][columns[i] - 1] = values[i];
+    }
+}
+
+void print_matrix(int** matrix, int line, int column)
+{
+    for (int i = 0; i < line; i++) {
+        for (int j = 0; j < column; j++) {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void create_matrix(int** matrix, int line, int column)
+{
+    for (int i = 0; i < line; i++)
+    {
+        matrix[i] = new int[column];
+    }
+}
+
+void print_array(int* arr, int count) 
+{
+    for (int i = 0; i < count; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
